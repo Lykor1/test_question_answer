@@ -8,7 +8,7 @@ class Question(models.Model):
 
 
 class Answer(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.CASCADE, verbose_name='Вопрос')
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answer', verbose_name='Вопрос')
     user_id = models.UUIDField(default=uuid4(), verbose_name='ID пользователя')
     text = models.TextField(verbose_name='Текст ответа')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания ответа')
