@@ -52,6 +52,23 @@ class TestQuestionsView:
         response = api_client.delete(reverse('question-detail', args=[question.id]))
         assert response.status_code == 204
 
+    def test_create_question_with_empty(self, api_client):
+        response = api_client.post(
+            reverse('question-list-create'),
+            data={'text': ''},
+            format='json'
+        )
+        response2 = api_client.post(
+            reverse('question-list-create'),
+            data={'text': '     '},
+            format='json'
+        )
+        assert response.status_code == 400
+        assert 'text' in response.data
+        assert 'Это поле не может быть пустым.' in response.data['text'][0]
+        assert response2.status_code == 400
+        assert 'text' in response2.data
+
 
 @pytest.mark.django_db
 class TestAnswersView:
@@ -72,3 +89,20 @@ class TestAnswersView:
     def test_delete_answer(self, api_client, answer):
         response = api_client.delete(reverse('answer-detail', args=[answer.id]))
         assert response.status_code == 204
+
+    def test_create_answer_with_empty(self, api_client, question):
+        response = api_client.post(
+            reverse('answer-create', args=[question.id]),
+            data={'user_id': str(uuid4()), 'text': ''},
+            format='json'
+        )
+        response2 = api_client.post(
+            reverse('answer-create', args=[question.id]),
+            data={'user_id': str(uuid4()), 'text': '     '},
+            format='json'
+        )
+        assert response.status_code == 400
+        assert 'text' in response.data
+        assert 'Это поле не может быть пустым.' in response.data['text'][0]
+        assert response2.status_code == 400
+        assert 'text' in response2.data
